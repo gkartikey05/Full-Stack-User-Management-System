@@ -1,0 +1,41 @@
+body {
+  background-color: #fafafa;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 40px;
+
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.profile-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+  object-fit: cover;
+}
+
+.username {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.bio {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.follower-count {
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
