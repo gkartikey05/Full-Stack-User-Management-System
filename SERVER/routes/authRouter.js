@@ -1,15 +1,19 @@
 const express = require("express");
 const {
-  signUp,
-  signIn,
-  userInfo,
-  signOut,
-} = require("../controllers/authController");
-const authRouter = express.Router();
+  userSignUp,
+  userLogin,
+  getUserDetails,
+} = require("../controllers/authController.js");
+const signupValidator = require("../middleware/signupValidator.js");
+const loginValidator = require("../middleware/loginValidator.js");
+const authenticateUser = require("../middleware/authenticateUser.js");
 
-authRouter.post("/sign-up", signUp);
-authRouter.post("/sign-in", signIn);
-authRouter.get("/user-info", userInfo);
-authRouter.get("/sign-out", signOut);
+const userRoute = express.Router();
 
-module.exports = authRouter;
+userRoute.post("/signup", signupValidator, userSignUp);
+
+userRoute.post("/login", loginValidator, userLogin);
+
+userRoute.get("/", authenticateUser, getUserDetails);
+
+module.exports = userRoute

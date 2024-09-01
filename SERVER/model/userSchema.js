@@ -1,53 +1,51 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const bcrypt = require("bcrypt");
+const JWT = require("jsonwebtoken");
 
-const userSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
-      minLength: [3, "Name must be atleast 3 characters long"],
-      maxLength: [30, "Name should be within 30 characters"],
-      lowercase: true,
-    },
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      trim: true,
-      unique: [true, "Email already registered"],
-      lowercase: true,
-      match: [
-        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g,
-      ],
-    },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      trim: true,
-      minLength: [8, "Password must be atleast 8 characters long"],
-      maxLength: [20, "Password should be within 20 characters"],
-      select: false,
-    },
-    confirmPassword: {
-      type: String,
-      required: [true, "Password is required"],
-      trim: true,
-      minLength: [8, "Password must be atleast 8 characters long"],
-      maxLength: [20, "Password should be within 20 characters"],
-      select: false,
-    },
-    forgotPasswordToken: {
-      type: String,
-    },
-    forgotPasswordExpiryDate: {
-      type: String,
-    },
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  email: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    select: false,
+  },
+  bio: {
+    type: String,
+    required: true,
+  },
+  username: {
+    type: String,
+    required: true,
+  },
+});
 
-const userModel = mongoose.model("user", userSchema);
-module.exports = userModel;
+// method to generate token
+userSchema.methods = {
+  jwtToken() {
+    return JWT.sign(
+      { id: this._id, username: this.username },
+      process.env.SECRET,
+      {
+        expiresIn: "24d",
+      }
+    );
+  },
+};
+
+// to hash password before saving it
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  this.password = await bcrypt.hash(this.password, 12); //hashing password
+  return next();
+});
+
+const UserModel = mongoose.model("users", userSchema);
+module.exports = UserModel;
